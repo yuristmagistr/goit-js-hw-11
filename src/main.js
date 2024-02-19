@@ -29,15 +29,15 @@ function onCreateFormSubmit(event) {
     });
   }
 
-    loader.style.display = 'inline-block';
     
   fetchImages(searchQuery);
   event.target.reset();
 }
 
 
-
 function fetchImages(searchQuery) {
+  loader.style.display = 'inline-block';
+
   const BASE_URL = 'https://pixabay.com/api/';
   const KEY = '?key=42435479-889f1388d96929484f40a1796';
   const Q = `&q=${searchQuery}`;
@@ -58,14 +58,17 @@ function fetchImages(searchQuery) {
         renderTicker(data);
       } else {
         iziToast.error({
-          message:
-            'Sorry, there are no images matching <br/>your search query. Please try again!',
+          message: 'Sorry, there are no images matching <br/>your search query. Please try again!',
           position: 'topRight',
         });
       }
     })
     .catch(error => {
       console.error('Error:', error);
+      iziToast.error({
+        message: 'Failed to fetch images. Please try again.',
+        position: 'topRight',
+      });
     })
     .finally(() => {
       loader.style.display = 'none';
@@ -77,20 +80,21 @@ function fetchImages(searchQuery) {
 
 
 function renderTicker(data) {
-    const markup = data.hits.map(templateImage).join('');
-    gallery.innerHTML = markup;
+  const markup = data.hits.map(templateImage).join('');
+  gallery.innerHTML = markup;
 
-    const galleryLinks = document.querySelectorAll('.gallery-link');
-    galleryLinks.forEach(link => {
-        link.setAttribute('href', link.querySelector('img').getAttribute('src'));
-    });
+  const galleryLinks = document.querySelectorAll('.gallery-link');
+  galleryLinks.forEach(link => {
+    link.setAttribute('href', link.querySelector('img').getAttribute('src'));
+  });
 
-    const lightbox = new SimpleLightbox('.gallery a', {
-        captionsData: 'alt',
-        captionDelay: 250,
-    });
+  const lightbox = new SimpleLightbox('.gallery a', {
+    captionsData: 'alt',
+    captionDelay: 250,
+  });
 
-    lightbox.refresh();
+  lightbox.refresh();
+}
 
 
     function templateImage({
@@ -118,4 +122,4 @@ function renderTicker(data) {
     </div>
   </li>`;
     }
-}
+
